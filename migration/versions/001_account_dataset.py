@@ -12,9 +12,9 @@ def upgrade(migrate_engine):
                     Column('id', Integer, primary_key=True),
                     Column('name', Unicode(255), unique=True),
                     Column('label', Unicode(2000)),
-                    Column('description', Unicode),
-                    Column('currency', Unicode),
-                    Column('default_time', Unicode),
+                    Column('description', Unicode(2000)),
+                    Column('currency', Unicode(2000)),
+                    Column('default_time', Unicode(255)),
                     Column('data', Text),
                     )
 
