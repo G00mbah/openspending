@@ -7,6 +7,6 @@ def upgrade(migrate_engine):
     meta.bind = migrate_engine
     dataset = Table('dataset', meta, autoload=True)
 
-    v = Column('schema_version', Unicode())
+    v = Column('schema_version', Unicode(255))
     v.create(dataset) 
 

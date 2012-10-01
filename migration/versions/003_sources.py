@@ -13,8 +13,8 @@ def upgrade(migrate_engine):
 
     source_table = Table('source', meta,
         Column('id', Integer, primary_key=True),
-        Column('url', Unicode),
-        Column('analysis', Unicode, default=dict),
+        Column('url', Unicode(255)),
+        Column('analysis', Unicode(2000), default=dict),
         Column('created_at', DateTime, default=datetime.utcnow),
         Column('dataset_id', Integer, ForeignKey('dataset.id')),
         Column('creator_id', Integer, ForeignKey('account.id'))

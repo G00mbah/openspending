@@ -11,7 +11,7 @@ def upgrade(migrate_engine):
 
     dataset_language = Table('dataset_language', meta,
         Column('id', Integer, primary_key=True),
-        Column('code', Unicode),
+        Column('code', Unicode(2000)),
         Column('created_at', DateTime, default=datetime.utcnow),
         Column('updated_at', DateTime, onupdate=datetime.utcnow),
         Column('dataset_id', Integer, ForeignKey('dataset.id'))
@@ -20,7 +20,7 @@ def upgrade(migrate_engine):
     
     dataset_territory = Table('dataset_territory', meta,
         Column('id', Integer, primary_key=True),
-        Column('code', Unicode),
+        Column('code', Unicode(2000)),
         Column('created_at', DateTime, default=datetime.utcnow),
         Column('updated_at', DateTime, onupdate=datetime.utcnow),
         Column('dataset_id', Integer, ForeignKey('dataset.id'))

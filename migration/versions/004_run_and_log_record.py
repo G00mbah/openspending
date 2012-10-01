@@ -24,16 +24,16 @@ def upgrade(migrate_engine):
     run_log_record = Table('log_record', meta,
         Column('id', Integer, primary_key=True),
         Column('run_id', Integer, ForeignKey('run.id')),
-        Column('category', Unicode),
-        Column('level', Unicode),
-        Column('message', Unicode),
+        Column('category', Unicode(2000)),
+        Column('level', Unicode255()),
+        Column('message', Unicode(2000)),
         Column('timestamp', DateTime),
-        Column('error', Unicode),
+        Column('error', Unicode(2000)),
         Column('row', Integer),
-        Column('attribute', Unicode),
-        Column('column', Unicode),
-        Column('data_type', Unicode),
-        Column('value', Unicode)
+        Column('attribute', Unicode(255)),
+        Column('column', Unicode(255)),
+        Column('data_type', Unicode(255)),
+        Column('value', Unicode(2000))
         )
     run_log_record.create()
 

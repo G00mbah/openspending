@@ -7,6 +7,6 @@ def upgrade(migrate_engine):
     meta.bind = migrate_engine
     dataset = Table('dataset', meta, autoload=True)
 
-    ckan_uri = Column('ckan_uri', Unicode())
+    ckan_uri = Column('ckan_uri', Unicode(255))
     ckan_uri.create(dataset) 
 
