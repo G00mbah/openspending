@@ -18,3 +18,5 @@ openspending/ui/templates/layout_orig.html
 openspending/ui/templates/help/*
 doc/_build/*
 *.mo
+/*.egg/
+.venv
