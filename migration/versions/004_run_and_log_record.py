@@ -25,7 +25,7 @@ def upgrade(migrate_engine):
         Column('id', Integer, primary_key=True),
         Column('run_id', Integer, ForeignKey('run.id')),
         Column('category', Unicode(2000)),
-        Column('level', Unicode255()),
+        Column('level', Unicode(255)),
         Column('message', Unicode(2000)),
         Column('timestamp', DateTime),
         Column('error', Unicode(2000)),
