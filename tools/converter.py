@@ -7,9 +7,13 @@ Created by Breyten Ernsting on 2013-02-11.
 Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 """
 
+import os
 import sys
+import re
 import getopt
 import logging
+
+from xlrd import open_workbook
 
 help_message = '''
 Converts amsterdam excel file with expenditure data
@@ -23,8 +27,46 @@ class Runner(object):
         logger.debug('Initializing ...')
         self.spending_file = spending_file
 
+    def _process_sheet(self, wb, ws):
+        # CSV format is this:
+        # hoofdfunctie hoofdfunctie_code categorie categorie_code bedrag type
+        logger.debug('Starting to process sheet %s', ws.name)
+        in_details = False
+        for row in range(ws.nrows):
+            skip_row = False
+            first_cell = ws.cell(row, 0)
+
+            if not in_details and (first_cell.value is not None):
+                try:
+                    in_details = (re.compile('Hoofdfunctie', re.U).match(str(first_cell.value)) is not None)
+                    skip_row = in_details
+                except UnicodeEncodeError, e:
+                    in_details = False
+            if in_details and (first_cell.value is not None):
+                in_details = not (re.compile('Totaal hoofdfunctie', re.U).match(str(first_cell.value)) is not None)
+
+            if not in_details or skip_row:
+                continue                
+
+            if in_details:
+                hoofdfunctie_code = str(int(first_cell.value))
+                hoofdfunctie = unicode(ws.cell(row, 1).value)
+                for col in range(ws.ncols):
+                    if col < 2:
+                        continue
+                    categorie_code = str(ws.cell(0, col).value)
+                    categorie = unicode(ws.cell(1, col).value)
+                    value = str(ws.cell(row, col).value)
+                    #print u','.join([hoofdfunctie, hoofdfunctie_code, categorie, categorie_code, value])
+
     def run(self):
         logger.info('Running ...')
+        wb = open_workbook(self.spending_file)
+        logger.debug('Opened file ...')
+
+        for s in wb.sheets():
+            if re.compile('Verdelingsmatrix', re.U).search(s.name):
+                self._process_sheet(wb, s)
 
 
 class Usage(Exception):
