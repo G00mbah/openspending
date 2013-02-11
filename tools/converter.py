@@ -57,7 +57,11 @@ class Runner(object):
                         continue
                     categorie_code = unicode(ws.cell(0, col).value)
                     categorie = unicode(ws.cell(1, col).value)
-                    value = unicode(ws.cell(row, col).value)
+                    raw_value = ws.cell(row, col).value 
+                    if raw_value is not None and (unicode(raw_value) != u''):
+                        value = unicode(raw_value)
+                    else:
+                        value = u'0.0'
                     csv_file.write(
                         u','.join([hoofdfunctie, hoofdfunctie_code, categorie, categorie_code, value])  + "\n"
                     )
