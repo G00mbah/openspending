@@ -23,14 +23,23 @@ Converts amsterdam excel file with expenditure data
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+def cleanup(text):
+    return re.compile("\s+", re.U).sub(u' ', text)
+
 class Runner(object):
     def __init__(self, spending_file):
         logger.debug('Initializing ...')
         self.spending_file = spending_file
 
     def _process_sheet(self, wb, ws, csv_file):
+        if (re.compile('baten', re.U).search(ws.name) is not None):
+            entry_type = u'baten'
+        else:
+            entry_type = u'lasten'
+
         # CSV format is this:
-        # hoofdfunctie hoofdfunctie_code categorie categorie_code bedrag type
+        csv_file.write(u','.join(['hoofdfunctie','hoofdfunctie_code','categorie','categorie_code','type','bedrag']) + "\n")
+
         logger.debug('Starting to process sheet %s', ws.name)
         in_details = False
         for row in range(ws.nrows):
@@ -49,22 +58,25 @@ class Runner(object):
             if not in_details or skip_row:
                 continue                
 
-            if in_details:
-                hoofdfunctie_code = unicode(int(first_cell.value))
-                hoofdfunctie = unicode(ws.cell(row, 1).value)
-                for col in range(ws.ncols):
-                    if col < 2:
-                        continue
-                    categorie_code = unicode(ws.cell(0, col).value)
-                    categorie = unicode(ws.cell(1, col).value)
-                    raw_value = ws.cell(row, col).value 
-                    if raw_value is not None and (unicode(raw_value) != u''):
-                        value = unicode(raw_value)
-                    else:
-                        value = u'0.0'
-                    csv_file.write(
-                        u','.join([hoofdfunctie, hoofdfunctie_code, categorie, categorie_code, value])  + "\n"
-                    )
+            hoofdfunctie_code = unicode(int(first_cell.value))
+            hoofdfunctie = unicode(ws.cell(row, 1).value)
+            for col in range(ws.ncols):
+                if col < 2:
+                    continue
+                categorie_code = unicode(ws.cell(0, col).value)
+                categorie = unicode(ws.cell(1, col).value)
+                if re.compile('Totaal').match(categorie) is not None:
+                    continue
+                raw_value = ws.cell(row, col).value 
+                if raw_value is not None and (unicode(raw_value) != u''):
+                    value = unicode(raw_value)
+                else:
+                    value = u'0.0'
+                csv_file.write(
+                    u','.join([
+                        cleanup(hoofdfunctie), hoofdfunctie_code, cleanup(categorie), categorie_code, entry_type, value
+                    ])  + "\n"
+                )
 
     def run(self):
         logger.info('Running ...')
