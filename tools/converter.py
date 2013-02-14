@@ -97,11 +97,12 @@ class Runner(object):
         wb = open_workbook(self.spending_file)
         logger.debug('Opened file ...')
 
-        csv_file = codecs.open('output.csv', 'w', 'utf-8')
         for s in wb.sheets():
             if re.compile('Verdelingsmatrix', re.U).search(s.name):
+                matrix_type = s.name.split()[-1]
+                csv_file = codecs.open('%s.csv' % (matrix_type, ), 'w', 'utf-8')                
                 self._process_sheet(wb, s, csv_file)
-        csv_file.close()
+                csv_file.close()
 
 class Usage(Exception):
     def __init__(self, msg):
