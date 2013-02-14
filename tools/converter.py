@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 def cleanup(text):
     return re.compile("\s+", re.U).sub(u' ', text)
 
+def format_string(value):
+    return "\"%s\"" % (value,)
+
 class Runner(object):
     def __init__(self, spending_file):
         logger.debug('Initializing ...')
@@ -38,7 +41,9 @@ class Runner(object):
             entry_type = u'lasten'
 
         # CSV format is this:
-        csv_file.write(u','.join(['hoofdfunctie','hoofdfunctie_code','categorie','categorie_code','type','bedrag']) + "\n")
+        csv_file.write(
+            u','.join(['hoofdfunctie','hoofdfunctie_code','categorie','categorie_code','type','time', 'amount']) + "\n"
+        )
 
         logger.debug('Starting to process sheet %s', ws.name)
         in_details = False
@@ -69,12 +74,18 @@ class Runner(object):
                     continue
                 raw_value = ws.cell(row, col).value 
                 if raw_value is not None and (unicode(raw_value) != u''):
-                    value = unicode(raw_value)
+                    value = unicode(float(raw_value) * 1000)
                 else:
                     value = u'0.0'
                 csv_file.write(
                     u','.join([
-                        cleanup(hoofdfunctie), hoofdfunctie_code, cleanup(categorie), categorie_code, entry_type, value
+                        format_string(cleanup(hoofdfunctie)),
+                        format_string(hoofdfunctie_code),
+                        format_string(cleanup(categorie)),
+                        format_string(categorie_code),
+                        format_string(entry_type),
+                        u"2013",
+                        value
                     ])  + "\n"
                 )
 
