@@ -13,6 +13,7 @@ import re
 import getopt
 import logging
 import codecs
+import string
 
 from xlrd import open_workbook
 
@@ -42,7 +43,7 @@ class Runner(object):
 
         # CSV format is this:
         csv_file.write(
-            u','.join(['hoofdfunctie','hoofdfunctie_code','categorie','categorie_code','type','time', 'amount']) + "\n"
+            u','.join(['hoofdfunctie', 'subfunctie','subfunctie_code','categorie','categorie_code','type','time', 'amount']) + "\n"
         )
 
         logger.debug('Starting to process sheet %s', ws.name)
@@ -54,6 +55,7 @@ class Runner(object):
             if not in_details and (first_cell.value is not None):
                 try:
                     in_details = (re.compile('Hoofdfunctie', re.U).match(unicode(first_cell.value)) is not None)
+                    hoofdfunctie_naam = string.capwords(unicode(ws.cell(row, 1).value))
                     skip_row = in_details
                 except UnicodeEncodeError, e:
                     in_details = False
@@ -63,8 +65,8 @@ class Runner(object):
             if not in_details or skip_row:
                 continue                
 
-            hoofdfunctie_code = unicode(int(first_cell.value))
-            hoofdfunctie = unicode(ws.cell(row, 1).value)
+            subfunctie_code = unicode(int(first_cell.value))
+            subfunctie = unicode(ws.cell(row, 1).value)
             for col in range(ws.ncols):
                 if col < 2:
                     continue
@@ -79,8 +81,9 @@ class Runner(object):
                     value = u'0.0'
                 csv_file.write(
                     u','.join([
-                        format_string(cleanup(hoofdfunctie)),
-                        format_string(hoofdfunctie_code),
+                        format_string(cleanup(hoofdfunctie_naam)),
+                        format_string(cleanup(subfunctie)),
+                        format_string(subfunctie_code),
                         format_string(cleanup(categorie)),
                         format_string(categorie_code),
                         format_string(entry_type),
