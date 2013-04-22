@@ -21,3 +21,7 @@ doc/_build/*
 /*.egg/
 .venv
 /apache*/
+*.csv
+*.xls
+/solr
+/openspending/ui/public/static/openspendingjs
